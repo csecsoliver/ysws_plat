@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package protobufschema;
+option go_package = "olio.ovh/yswsplat/protobufschema";
+
+service ReviewQueue {
+    rpc Enqueue (Submission) returns (QueueTicket);
+    rpc WatchStats (StatsRequest) returns (stream QueueStats);
+    rpc BulkEnqueue (stream Submission) returns (QueueTicket)
+    rpc ReviewSession (stream ReviewMessage) returns (stream ReviewMessage)
+}
+
+message Submission {
+	string name = 1;
+	string author = 2;
+	string 
+}
+
+message HelloRequest { string name = 1;}
+message HelloReply { string message = 1; }
