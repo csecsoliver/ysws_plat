@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
+	"log"
+	"time"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
 	pb "olio.ovh/yswsplat/protobufschema"
-	"time"
 )
 
 func main() {
@@ -14,15 +15,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer conn.Close()
+	defer func(conn *grpc.ClientConn) {
+		err := conn.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}(conn)
 
-	client := pb.NewGreeterClient(conn)
+	client := pb.NewReviewQueueClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	reply, err := client.SayHello(ctx, &pb.HelloRequest{Name: "asd"})
+	reply, err := client.Enqueue(ctx, &pb.Submission{Name: "asd", Author: "somebody", Description: "something"})
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(reply.GetMessage())
+	log.Println(reply.GetUuid())
 }

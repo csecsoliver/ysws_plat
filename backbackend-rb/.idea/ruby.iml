@@ -18,5 +18,6 @@
     <orderEntry type="library" scope="PROVIDED" name="grpc (v1.85.0, mise: 4.0.9) [gem]" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="grpc-tools (v1.85.0, mise: 4.0.9) [gem]" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="rake (v13.4.2, mise: 4.0.9) [gem]" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="sequel (v5.110.0, mise: 4.0.9) [gem]" level="project" />
   </component>
 </module>
