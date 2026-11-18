@@ -21,27 +21,81 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type HelloRequest struct {
+type Verdict int32
+
+const (
+	Verdict_APPROVED Verdict = 0
+	Verdict_CHANGES  Verdict = 1
+	Verdict_REJECTED Verdict = 2
+	Verdict_FRAUD    Verdict = 3
+)
+
+// Enum value maps for Verdict.
+var (
+	Verdict_name = map[int32]string{
+		0: "APPROVED",
+		1: "CHANGES",
+		2: "REJECTED",
+		3: "FRAUD",
+	}
+	Verdict_value = map[string]int32{
+		"APPROVED": 0,
+		"CHANGES":  1,
+		"REJECTED": 2,
+		"FRAUD":    3,
+	}
+)
+
+func (x Verdict) Enum() *Verdict {
+	p := new(Verdict)
+	*p = x
+	return p
+}
+
+func (x Verdict) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Verdict) Descriptor() protoreflect.EnumDescriptor {
+	return file_greeter_proto_enumTypes[0].Descriptor()
+}
+
+func (Verdict) Type() protoreflect.EnumType {
+	return &file_greeter_proto_enumTypes[0]
+}
+
+func (x Verdict) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Verdict.Descriptor instead.
+func (Verdict) EnumDescriptor() ([]byte, []int) {
+	return file_greeter_proto_rawDescGZIP(), []int{0}
+}
+
+type Submission struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Author        string                 `protobuf:"bytes,2,opt,name=author,proto3" json:"author,omitempty"`
+	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *HelloRequest) Reset() {
-	*x = HelloRequest{}
+func (x *Submission) Reset() {
+	*x = Submission{}
 	mi := &file_greeter_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *HelloRequest) String() string {
+func (x *Submission) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*HelloRequest) ProtoMessage() {}
+func (*Submission) ProtoMessage() {}
 
-func (x *HelloRequest) ProtoReflect() protoreflect.Message {
+func (x *Submission) ProtoReflect() protoreflect.Message {
 	mi := &file_greeter_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -53,39 +107,53 @@ func (x *HelloRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use HelloRequest.ProtoReflect.Descriptor instead.
-func (*HelloRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use Submission.ProtoReflect.Descriptor instead.
+func (*Submission) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *HelloRequest) GetName() string {
+func (x *Submission) GetName() string {
 	if x != nil {
 		return x.Name
 	}
 	return ""
 }
 
-type HelloReply struct {
+func (x *Submission) GetAuthor() string {
+	if x != nil {
+		return x.Author
+	}
+	return ""
+}
+
+func (x *Submission) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+type QueueTicket struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	Uuid          string                 `protobuf:"bytes,1,opt,name=uuid,proto3" json:"uuid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *HelloReply) Reset() {
-	*x = HelloReply{}
+func (x *QueueTicket) Reset() {
+	*x = QueueTicket{}
 	mi := &file_greeter_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *HelloReply) String() string {
+func (x *QueueTicket) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*HelloReply) ProtoMessage() {}
+func (*QueueTicket) ProtoMessage() {}
 
-func (x *HelloReply) ProtoReflect() protoreflect.Message {
+func (x *QueueTicket) ProtoReflect() protoreflect.Message {
 	mi := &file_greeter_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -97,14 +165,154 @@ func (x *HelloReply) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use HelloReply.ProtoReflect.Descriptor instead.
-func (*HelloReply) Descriptor() ([]byte, []int) {
+// Deprecated: Use QueueTicket.ProtoReflect.Descriptor instead.
+func (*QueueTicket) Descriptor() ([]byte, []int) {
 	return file_greeter_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *HelloReply) GetMessage() string {
+func (x *QueueTicket) GetUuid() string {
+	if x != nil {
+		return x.Uuid
+	}
+	return ""
+}
+
+type StatsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StatsRequest) Reset() {
+	*x = StatsRequest{}
+	mi := &file_greeter_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StatsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StatsRequest) ProtoMessage() {}
+
+func (x *StatsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_greeter_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StatsRequest.ProtoReflect.Descriptor instead.
+func (*StatsRequest) Descriptor() ([]byte, []int) {
+	return file_greeter_proto_rawDescGZIP(), []int{2}
+}
+
+type QueueStats struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	UnreviewedCount int64                  `protobuf:"varint,1,opt,name=unreviewed_count,json=unreviewedCount,proto3" json:"unreviewed_count,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *QueueStats) Reset() {
+	*x = QueueStats{}
+	mi := &file_greeter_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QueueStats) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QueueStats) ProtoMessage() {}
+
+func (x *QueueStats) ProtoReflect() protoreflect.Message {
+	mi := &file_greeter_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QueueStats.ProtoReflect.Descriptor instead.
+func (*QueueStats) Descriptor() ([]byte, []int) {
+	return file_greeter_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *QueueStats) GetUnreviewedCount() int64 {
+	if x != nil {
+		return x.UnreviewedCount
+	}
+	return 0
+}
+
+type ReviewMessage struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Verdict       Verdict                `protobuf:"varint,1,opt,name=verdict,proto3,enum=protobufschema.Verdict" json:"verdict,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	Internal      string                 `protobuf:"bytes,3,opt,name=internal,proto3" json:"internal,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ReviewMessage) Reset() {
+	*x = ReviewMessage{}
+	mi := &file_greeter_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ReviewMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ReviewMessage) ProtoMessage() {}
+
+func (x *ReviewMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_greeter_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ReviewMessage.ProtoReflect.Descriptor instead.
+func (*ReviewMessage) Descriptor() ([]byte, []int) {
+	return file_greeter_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ReviewMessage) GetVerdict() Verdict {
+	if x != nil {
+		return x.Verdict
+	}
+	return Verdict_APPROVED
+}
+
+func (x *ReviewMessage) GetMessage() string {
 	if x != nil {
 		return x.Message
+	}
+	return ""
+}
+
+func (x *ReviewMessage) GetInternal() string {
+	if x != nil {
+		return x.Internal
 	}
 	return ""
 }
@@ -113,14 +321,33 @@ var File_greeter_proto protoreflect.FileDescriptor
 
 const file_greeter_proto_rawDesc = "" +
 	"\n" +
-	"\rgreeter.proto\x12\x0eprotobufschema\"\"\n" +
-	"\fHelloRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"&\n" +
+	"\rgreeter.proto\x12\x0eprotobufschema\"Z\n" +
 	"\n" +
-	"HelloReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2O\n" +
-	"\aGreeter\x12D\n" +
-	"\bSayHello\x12\x1c.protobufschema.HelloRequest\x1a\x1a.protobufschema.HelloReplyB\"Z olio.ovh/yswsplat/protobufschemab\x06proto3"
+	"Submission\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
+	"\x06author\x18\x02 \x01(\tR\x06author\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\"!\n" +
+	"\vQueueTicket\x12\x12\n" +
+	"\x04uuid\x18\x01 \x01(\tR\x04uuid\"\x0e\n" +
+	"\fStatsRequest\"7\n" +
+	"\n" +
+	"QueueStats\x12)\n" +
+	"\x10unreviewed_count\x18\x01 \x01(\x03R\x0funreviewedCount\"x\n" +
+	"\rReviewMessage\x121\n" +
+	"\averdict\x18\x01 \x01(\x0e2\x17.protobufschema.VerdictR\averdict\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1a\n" +
+	"\binternal\x18\x03 \x01(\tR\binternal*=\n" +
+	"\aVerdict\x12\f\n" +
+	"\bAPPROVED\x10\x00\x12\v\n" +
+	"\aCHANGES\x10\x01\x12\f\n" +
+	"\bREJECTED\x10\x02\x12\t\n" +
+	"\x05FRAUD\x10\x032\xb5\x02\n" +
+	"\vReviewQueue\x12B\n" +
+	"\aEnqueue\x12\x1a.protobufschema.Submission\x1a\x1b.protobufschema.QueueTicket\x12H\n" +
+	"\n" +
+	"WatchStats\x12\x1c.protobufschema.StatsRequest\x1a\x1a.protobufschema.QueueStats0\x01\x12H\n" +
+	"\vBulkEnqueue\x12\x1a.protobufschema.Submission\x1a\x1b.protobufschema.QueueTicket(\x01\x12N\n" +
+	"\rReviewSession\x12\x1d.protobufschema.ReviewMessage\x1a\x1a.protobufschema.Submission(\x010\x01B\"Z olio.ovh/yswsplat/protobufschemab\x06proto3"
 
 var (
 	file_greeter_proto_rawDescOnce sync.Once
@@ -134,19 +361,31 @@ func file_greeter_proto_rawDescGZIP() []byte {
 	return file_greeter_proto_rawDescData
 }
 
-var file_greeter_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_greeter_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_greeter_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_greeter_proto_goTypes = []any{
-	(*HelloRequest)(nil), // 0: protobufschema.HelloRequest
-	(*HelloReply)(nil),   // 1: protobufschema.HelloReply
+	(Verdict)(0),          // 0: protobufschema.Verdict
+	(*Submission)(nil),    // 1: protobufschema.Submission
+	(*QueueTicket)(nil),   // 2: protobufschema.QueueTicket
+	(*StatsRequest)(nil),  // 3: protobufschema.StatsRequest
+	(*QueueStats)(nil),    // 4: protobufschema.QueueStats
+	(*ReviewMessage)(nil), // 5: protobufschema.ReviewMessage
 }
 var file_greeter_proto_depIdxs = []int32{
-	0, // 0: protobufschema.Greeter.SayHello:input_type -> protobufschema.HelloRequest
-	1, // 1: protobufschema.Greeter.SayHello:output_type -> protobufschema.HelloReply
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0, // 0: protobufschema.ReviewMessage.verdict:type_name -> protobufschema.Verdict
+	1, // 1: protobufschema.ReviewQueue.Enqueue:input_type -> protobufschema.Submission
+	3, // 2: protobufschema.ReviewQueue.WatchStats:input_type -> protobufschema.StatsRequest
+	1, // 3: protobufschema.ReviewQueue.BulkEnqueue:input_type -> protobufschema.Submission
+	5, // 4: protobufschema.ReviewQueue.ReviewSession:input_type -> protobufschema.ReviewMessage
+	2, // 5: protobufschema.ReviewQueue.Enqueue:output_type -> protobufschema.QueueTicket
+	4, // 6: protobufschema.ReviewQueue.WatchStats:output_type -> protobufschema.QueueStats
+	2, // 7: protobufschema.ReviewQueue.BulkEnqueue:output_type -> protobufschema.QueueTicket
+	1, // 8: protobufschema.ReviewQueue.ReviewSession:output_type -> protobufschema.Submission
+	5, // [5:9] is the sub-list for method output_type
+	1, // [1:5] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_greeter_proto_init() }
@@ -159,13 +398,14 @@ func file_greeter_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_greeter_proto_rawDesc), len(file_greeter_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   2,
+			NumEnums:      1,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_greeter_proto_goTypes,
 		DependencyIndexes: file_greeter_proto_depIdxs,
+		EnumInfos:         file_greeter_proto_enumTypes,
 		MessageInfos:      file_greeter_proto_msgTypes,
 	}.Build()
 	File_greeter_proto = out.File

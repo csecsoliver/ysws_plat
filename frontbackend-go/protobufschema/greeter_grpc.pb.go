@@ -19,103 +19,208 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Greeter_SayHello_FullMethodName = "/protobufschema.Greeter/SayHello"
+	ReviewQueue_Enqueue_FullMethodName       = "/protobufschema.ReviewQueue/Enqueue"
+	ReviewQueue_WatchStats_FullMethodName    = "/protobufschema.ReviewQueue/WatchStats"
+	ReviewQueue_BulkEnqueue_FullMethodName   = "/protobufschema.ReviewQueue/BulkEnqueue"
+	ReviewQueue_ReviewSession_FullMethodName = "/protobufschema.ReviewQueue/ReviewSession"
 )
 
-// GreeterClient is the client API for Greeter service.
+// ReviewQueueClient is the client API for ReviewQueue service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GreeterClient interface {
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+type ReviewQueueClient interface {
+	Enqueue(ctx context.Context, in *Submission, opts ...grpc.CallOption) (*QueueTicket, error)
+	WatchStats(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[QueueStats], error)
+	BulkEnqueue(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Submission, QueueTicket], error)
+	ReviewSession(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ReviewMessage, Submission], error)
 }
 
-type greeterClient struct {
+type reviewQueueClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
-	return &greeterClient{cc}
+func NewReviewQueueClient(cc grpc.ClientConnInterface) ReviewQueueClient {
+	return &reviewQueueClient{cc}
 }
 
-func (c *greeterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+func (c *reviewQueueClient) Enqueue(ctx context.Context, in *Submission, opts ...grpc.CallOption) (*QueueTicket, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, Greeter_SayHello_FullMethodName, in, out, cOpts...)
+	out := new(QueueTicket)
+	err := c.cc.Invoke(ctx, ReviewQueue_Enqueue_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GreeterServer is the server API for Greeter service.
-// All implementations must embed UnimplementedGreeterServer
-// for forward compatibility.
-type GreeterServer interface {
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
-	mustEmbedUnimplementedGreeterServer()
+func (c *reviewQueueClient) WatchStats(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[QueueStats], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &ReviewQueue_ServiceDesc.Streams[0], ReviewQueue_WatchStats_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[StatsRequest, QueueStats]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
 }
 
-// UnimplementedGreeterServer must be embedded to have
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ReviewQueue_WatchStatsClient = grpc.ServerStreamingClient[QueueStats]
+
+func (c *reviewQueueClient) BulkEnqueue(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Submission, QueueTicket], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &ReviewQueue_ServiceDesc.Streams[1], ReviewQueue_BulkEnqueue_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[Submission, QueueTicket]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ReviewQueue_BulkEnqueueClient = grpc.ClientStreamingClient[Submission, QueueTicket]
+
+func (c *reviewQueueClient) ReviewSession(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[ReviewMessage, Submission], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &ReviewQueue_ServiceDesc.Streams[2], ReviewQueue_ReviewSession_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[ReviewMessage, Submission]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ReviewQueue_ReviewSessionClient = grpc.BidiStreamingClient[ReviewMessage, Submission]
+
+// ReviewQueueServer is the server API for ReviewQueue service.
+// All implementations must embed UnimplementedReviewQueueServer
+// for forward compatibility.
+type ReviewQueueServer interface {
+	Enqueue(context.Context, *Submission) (*QueueTicket, error)
+	WatchStats(*StatsRequest, grpc.ServerStreamingServer[QueueStats]) error
+	BulkEnqueue(grpc.ClientStreamingServer[Submission, QueueTicket]) error
+	ReviewSession(grpc.BidiStreamingServer[ReviewMessage, Submission]) error
+	mustEmbedUnimplementedReviewQueueServer()
+}
+
+// UnimplementedReviewQueueServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedGreeterServer struct{}
+type UnimplementedReviewQueueServer struct{}
 
-func (UnimplementedGreeterServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Error(codes.Unimplemented, "method SayHello not implemented")
+func (UnimplementedReviewQueueServer) Enqueue(context.Context, *Submission) (*QueueTicket, error) {
+	return nil, status.Error(codes.Unimplemented, "method Enqueue not implemented")
 }
-func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
-func (UnimplementedGreeterServer) testEmbeddedByValue()                 {}
+func (UnimplementedReviewQueueServer) WatchStats(*StatsRequest, grpc.ServerStreamingServer[QueueStats]) error {
+	return status.Error(codes.Unimplemented, "method WatchStats not implemented")
+}
+func (UnimplementedReviewQueueServer) BulkEnqueue(grpc.ClientStreamingServer[Submission, QueueTicket]) error {
+	return status.Error(codes.Unimplemented, "method BulkEnqueue not implemented")
+}
+func (UnimplementedReviewQueueServer) ReviewSession(grpc.BidiStreamingServer[ReviewMessage, Submission]) error {
+	return status.Error(codes.Unimplemented, "method ReviewSession not implemented")
+}
+func (UnimplementedReviewQueueServer) mustEmbedUnimplementedReviewQueueServer() {}
+func (UnimplementedReviewQueueServer) testEmbeddedByValue()                     {}
 
-// UnsafeGreeterServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GreeterServer will
+// UnsafeReviewQueueServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ReviewQueueServer will
 // result in compilation errors.
-type UnsafeGreeterServer interface {
-	mustEmbedUnimplementedGreeterServer()
+type UnsafeReviewQueueServer interface {
+	mustEmbedUnimplementedReviewQueueServer()
 }
 
-func RegisterGreeterServer(s grpc.ServiceRegistrar, srv GreeterServer) {
-	// If the following call panics, it indicates UnimplementedGreeterServer was
+func RegisterReviewQueueServer(s grpc.ServiceRegistrar, srv ReviewQueueServer) {
+	// If the following call panics, it indicates UnimplementedReviewQueueServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Greeter_ServiceDesc, srv)
+	s.RegisterService(&ReviewQueue_ServiceDesc, srv)
 }
 
-func _Greeter_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
+func _ReviewQueue_Enqueue_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Submission)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).SayHello(ctx, in)
+		return srv.(ReviewQueueServer).Enqueue(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Greeter_SayHello_FullMethodName,
+		FullMethod: ReviewQueue_Enqueue_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).SayHello(ctx, req.(*HelloRequest))
+		return srv.(ReviewQueueServer).Enqueue(ctx, req.(*Submission))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Greeter_ServiceDesc is the grpc.ServiceDesc for Greeter service.
+func _ReviewQueue_WatchStats_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StatsRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ReviewQueueServer).WatchStats(m, &grpc.GenericServerStream[StatsRequest, QueueStats]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ReviewQueue_WatchStatsServer = grpc.ServerStreamingServer[QueueStats]
+
+func _ReviewQueue_BulkEnqueue_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ReviewQueueServer).BulkEnqueue(&grpc.GenericServerStream[Submission, QueueTicket]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ReviewQueue_BulkEnqueueServer = grpc.ClientStreamingServer[Submission, QueueTicket]
+
+func _ReviewQueue_ReviewSession_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(ReviewQueueServer).ReviewSession(&grpc.GenericServerStream[ReviewMessage, Submission]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type ReviewQueue_ReviewSessionServer = grpc.BidiStreamingServer[ReviewMessage, Submission]
+
+// ReviewQueue_ServiceDesc is the grpc.ServiceDesc for ReviewQueue service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Greeter_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "protobufschema.Greeter",
-	HandlerType: (*GreeterServer)(nil),
+var ReviewQueue_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "protobufschema.ReviewQueue",
+	HandlerType: (*ReviewQueueServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SayHello",
-			Handler:    _Greeter_SayHello_Handler,
+			MethodName: "Enqueue",
+			Handler:    _ReviewQueue_Enqueue_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "WatchStats",
+			Handler:       _ReviewQueue_WatchStats_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "BulkEnqueue",
+			Handler:       _ReviewQueue_BulkEnqueue_Handler,
+			ClientStreams: true,
+		},
+		{
+			StreamName:    "ReviewSession",
+			Handler:       _ReviewQueue_ReviewSession_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "greeter.proto",
 }

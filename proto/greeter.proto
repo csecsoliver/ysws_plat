@@ -6,15 +6,36 @@ option go_package = "olio.ovh/yswsplat/protobufschema";
 service ReviewQueue {
     rpc Enqueue (Submission) returns (QueueTicket);
     rpc WatchStats (StatsRequest) returns (stream QueueStats);
-    rpc BulkEnqueue (stream Submission) returns (QueueTicket)
-    rpc ReviewSession (stream ReviewMessage) returns (stream ReviewMessage)
+    rpc BulkEnqueue (stream Submission) returns (QueueTicket);
+    rpc ReviewSession (stream ReviewMessage) returns (stream Submission);
+    
 }
 
 message Submission {
 	string name = 1;
 	string author = 2;
-	string 
+	string description = 3;
 }
 
-message HelloRequest { string name = 1;}
-message HelloReply { string message = 1; }
+message QueueTicket {
+    string uuid = 1;
+}
+
+message StatsRequest {
+    
+}
+message QueueStats {
+    int64 unreviewed_count = 1;
+}
+
+message ReviewMessage {
+    Verdict verdict = 1;
+    string message = 2;
+    string internal = 3;
+}
+enum Verdict {
+    APPROVED = 0;
+    CHANGES = 1;
+    REJECTED = 2;
+    FRAUD = 3;
+}

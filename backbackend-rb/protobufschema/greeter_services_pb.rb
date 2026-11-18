@@ -5,16 +5,19 @@ require 'grpc'
 require 'greeter_pb'
 
 module Protobufschema
-  module Greeter
+  module ReviewQueue
     class Service
 
       include ::GRPC::GenericService
 
       self.marshal_class_method = :encode
       self.unmarshal_class_method = :decode
-      self.service_name = 'protobufschema.Greeter'
+      self.service_name = 'protobufschema.ReviewQueue'
 
-      rpc :SayHello, ::Protobufschema::HelloRequest, ::Protobufschema::HelloReply
+      rpc :Enqueue, ::Protobufschema::Submission, ::Protobufschema::QueueTicket
+      rpc :WatchStats, ::Protobufschema::StatsRequest, stream(::Protobufschema::QueueStats)
+      rpc :BulkEnqueue, stream(::Protobufschema::Submission), ::Protobufschema::QueueTicket
+      rpc :ReviewSession, stream(::Protobufschema::ReviewMessage), stream(::Protobufschema::Submission)
     end
 
     Stub = Service.rpc_stub_class

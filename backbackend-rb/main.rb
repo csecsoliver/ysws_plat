@@ -2,9 +2,9 @@ $LOAD_PATH.unshift(File.join(__dir__, 'protobufschema'))
 require 'grpc'
 require 'greeter_services_pb'
 
-class GreeterServer < Protobufschema::Greeter::Service
-  def say_hello(req, _call)
-    Protobufschema::HelloReply.new(message: "Hello, #{req.name}")
+class ReviewServer < Protobufschema::ReviewQueue::Service
+  def Enqueue(req, _call)
+    Protobufschema::QueueTicket.new(uuid: "asd")
   end
 end
 
