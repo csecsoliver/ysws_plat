@@ -2,7 +2,7 @@ gen: gen-ruby gen-go
 
 gen-ruby:
 	cd backbackend-rb && bundle exec grpc_tools_ruby_protoc -I ../proto \
-	  --ruby_out=protobufschema --grpc_out=protobufschema ../proto/greeter.proto
+	  --ruby_out=lib --grpc_out=lib ../proto/greeter.proto
 
 gen-go:
 	protoc -I proto \

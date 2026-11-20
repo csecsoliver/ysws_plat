@@ -1,15 +1,20 @@
 require 'grpc'
-require 'protobufschema/greeter_services_pb'
+require 'greeter_services_pb'
 require 'sequel'
 
 class ReviewServer < Protobufschema::ReviewQueue::Service
-  def new()
-    self.DB = Sequel.sqlite('review.db')
-  end
-  def enqueue(req, _call)
-
-    Protobufschema::QueueTicket.new(uuid: req.name+req.author+req.description)
-  end
+	def initialize
+		@db = Sequel.sqlite('review.db')
+	end
+	def enqueue(req, _call)
+		@db[:submissions].insert(
+			uuid: SecureRandom.uuid,
+			date: Time.now,
+			message: req.description,
+			project_id: 1
+		)
+		Protobufschema::QueueTicket.new(uuid: req.name+req.author+req.description)
+	end
 end
 
 server = GRPC::RpcServer.new

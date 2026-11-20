@@ -14,6 +14,7 @@ module Protobufschema
       self.unmarshal_class_method = :decode
       self.service_name = 'protobufschema.ReviewQueue'
 
+      rpc :InitProject, ::Protobufschema::Project, ::Protobufschema::ProjectTicket
       rpc :Enqueue, ::Protobufschema::Submission, ::Protobufschema::QueueTicket
       rpc :WatchStats, ::Protobufschema::StatsRequest, stream(::Protobufschema::QueueStats)
       rpc :BulkEnqueue, stream(::Protobufschema::Submission), ::Protobufschema::QueueTicket
