@@ -26,7 +26,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	reply, err := client.Enqueue(ctx, &pb.Submission{Name: "asd", Author: "somebody", Description: "something"})
+	reply, err := client.InitProject(ctx, &pb.Project{Name: "asd", Description: "something"})
 	if err != nil {
 		log.Fatal(err)
 	}
