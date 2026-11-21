@@ -15,6 +15,7 @@ module Protobufschema
       self.service_name = 'protobufschema.ReviewQueue'
 
       rpc :InitProject, ::Protobufschema::Project, ::Protobufschema::ProjectTicket
+      rpc :GetProject, ::Protobufschema::ProjectTicket, ::Protobufschema::Project
       rpc :Enqueue, ::Protobufschema::Submission, ::Protobufschema::QueueTicket
       rpc :WatchStats, ::Protobufschema::StatsRequest, stream(::Protobufschema::QueueStats)
       rpc :BulkEnqueue, stream(::Protobufschema::Submission), ::Protobufschema::QueueTicket

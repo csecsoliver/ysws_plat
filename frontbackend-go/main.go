@@ -26,9 +26,22 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
-	reply, err := client.InitProject(ctx, &pb.Project{Name: "asd", Description: "something"})
+	projTicket, err := client.InitProject(ctx, &pb.Project{Name: "asd", Description: "something"})
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(reply.GetUuid())
+	log.Println(projTicket.GetUuid())
+
+	projDetails, err := client.GetProject(ctx, projTicket)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(projDetails.GetName())
+	
+	subTicket, err := client.Enqueue(ctx, &pb.Submission{ProjectUuid: projTicket.GetUuid(), Comment: "comment"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(subTicket.GetUuid())
 }
+

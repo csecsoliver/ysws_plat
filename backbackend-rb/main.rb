@@ -11,8 +11,8 @@ class ReviewServer < Protobufschema::ReviewQueue::Service
 		@db[:submissions].insert(
 			uuid: uuid,
 			date: Time.now,
-			message: req.description,
-			project_id: 1
+			message: req.comment,
+			project_uuid: req.project_uuid
 		)
 		Protobufschema::QueueTicket.new(uuid: uuid)
 	end
@@ -25,7 +25,11 @@ class ReviewServer < Protobufschema::ReviewQueue::Service
 		)
 		Protobufschema::ProjectTicket.new(uuid: uuid)
 	end
-
+	def get_project(req, _call)
+		proj = @db[:projects].where(uuid: req.uuid).first
+		raise GRPC::BadStatus.new(GRPC::Core::StatusCodes::NOT_FOUND, "unknown project uuid") if proj.nil?
+		Protobufschema::Project.new(name: proj[:name], description: proj[:description])
+	end
 end
 
 server = GRPC::RpcServer.new

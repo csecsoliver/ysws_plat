@@ -5,6 +5,7 @@ option go_package = "olio.ovh/yswsplat/protobufschema";
 
 service ReviewQueue {
 	rpc InitProject (Project) returns (ProjectTicket);
+	rpc GetProject (ProjectTicket) returns (Project);
     rpc Enqueue (Submission) returns (QueueTicket);
     rpc WatchStats (StatsRequest) returns (stream QueueStats);
     rpc BulkEnqueue (stream Submission) returns (QueueTicket);
@@ -12,6 +13,7 @@ service ReviewQueue {
     
 }
 
+// Submission
 message Submission {
 	string project_uuid = 1;
 	string comment = 2;
@@ -20,14 +22,18 @@ message Submission {
 message QueueTicket {
     string uuid = 1;
 }
+
+// Project
 message Project {
 	string name = 1;
 	string description = 2;
 }
-
 message ProjectTicket {
     string uuid = 1;
 }
+
+
+
 
 message StatsRequest {
     

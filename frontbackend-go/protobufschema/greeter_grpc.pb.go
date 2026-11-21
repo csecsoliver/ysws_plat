@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	ReviewQueue_InitProject_FullMethodName   = "/protobufschema.ReviewQueue/InitProject"
+	ReviewQueue_GetProject_FullMethodName    = "/protobufschema.ReviewQueue/GetProject"
 	ReviewQueue_Enqueue_FullMethodName       = "/protobufschema.ReviewQueue/Enqueue"
 	ReviewQueue_WatchStats_FullMethodName    = "/protobufschema.ReviewQueue/WatchStats"
 	ReviewQueue_BulkEnqueue_FullMethodName   = "/protobufschema.ReviewQueue/BulkEnqueue"
@@ -31,6 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ReviewQueueClient interface {
 	InitProject(ctx context.Context, in *Project, opts ...grpc.CallOption) (*ProjectTicket, error)
+	GetProject(ctx context.Context, in *ProjectTicket, opts ...grpc.CallOption) (*Project, error)
 	Enqueue(ctx context.Context, in *Submission, opts ...grpc.CallOption) (*QueueTicket, error)
 	WatchStats(ctx context.Context, in *StatsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[QueueStats], error)
 	BulkEnqueue(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[Submission, QueueTicket], error)
@@ -49,6 +51,16 @@ func (c *reviewQueueClient) InitProject(ctx context.Context, in *Project, opts .
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ProjectTicket)
 	err := c.cc.Invoke(ctx, ReviewQueue_InitProject_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *reviewQueueClient) GetProject(ctx context.Context, in *ProjectTicket, opts ...grpc.CallOption) (*Project, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Project)
+	err := c.cc.Invoke(ctx, ReviewQueue_GetProject_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -115,6 +127,7 @@ type ReviewQueue_ReviewSessionClient = grpc.BidiStreamingClient[ReviewMessage, S
 // for forward compatibility.
 type ReviewQueueServer interface {
 	InitProject(context.Context, *Project) (*ProjectTicket, error)
+	GetProject(context.Context, *ProjectTicket) (*Project, error)
 	Enqueue(context.Context, *Submission) (*QueueTicket, error)
 	WatchStats(*StatsRequest, grpc.ServerStreamingServer[QueueStats]) error
 	BulkEnqueue(grpc.ClientStreamingServer[Submission, QueueTicket]) error
@@ -131,6 +144,9 @@ type UnimplementedReviewQueueServer struct{}
 
 func (UnimplementedReviewQueueServer) InitProject(context.Context, *Project) (*ProjectTicket, error) {
 	return nil, status.Error(codes.Unimplemented, "method InitProject not implemented")
+}
+func (UnimplementedReviewQueueServer) GetProject(context.Context, *ProjectTicket) (*Project, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetProject not implemented")
 }
 func (UnimplementedReviewQueueServer) Enqueue(context.Context, *Submission) (*QueueTicket, error) {
 	return nil, status.Error(codes.Unimplemented, "method Enqueue not implemented")
@@ -179,6 +195,24 @@ func _ReviewQueue_InitProject_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ReviewQueueServer).InitProject(ctx, req.(*Project))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ReviewQueue_GetProject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProjectTicket)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReviewQueueServer).GetProject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReviewQueue_GetProject_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReviewQueueServer).GetProject(ctx, req.(*ProjectTicket))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,6 +270,10 @@ var ReviewQueue_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "InitProject",
 			Handler:    _ReviewQueue_InitProject_Handler,
+		},
+		{
+			MethodName: "GetProject",
+			Handler:    _ReviewQueue_GetProject_Handler,
 		},
 		{
 			MethodName: "Enqueue",
