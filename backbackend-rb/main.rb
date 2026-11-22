@@ -30,6 +30,8 @@ class ReviewServer < Protobufschema::ReviewQueue::Service
 		raise GRPC::BadStatus.new(GRPC::Core::StatusCodes::NOT_FOUND, "unknown project uuid") if proj.nil?
 		Protobufschema::Project.new(name: proj[:name], description: proj[:description])
 	end
+	
+
 end
 
 server = GRPC::RpcServer.new
